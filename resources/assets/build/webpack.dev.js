@@ -11,7 +11,7 @@ for (var name in BaseConfig.entry) {
   BaseConfig.entry[name] = [path.resolve(__dirname, './server-client'), ...BaseConfig.entry[name]]
 }
 
-module.exports = Merge(BaseConfig, {
+const DevConfig = {
   devtool: 'cheap-module-eval-source-map', // https://webpack.js.org/guides/development/#source-maps
   output: { publicPath: 'http://localhost:' + config.port + config.assets_url, path: '/tmp/' },
 
@@ -22,21 +22,11 @@ module.exports = Merge(BaseConfig, {
 
     new webpack.HotModuleReplacementPlugin(), // // Enable HMR
     new webpack.NoEmitOnErrorsPlugin(),
-    new BundleAnalyzerPlugin({ analyzerPort: 3333 })
   ]
+}
 
-})
+if (config.bundleAnalyzerPort) {
+  DevConfig.plugins.push(new BundleAnalyzerPlugin({ analyzerPort: config.bundleAnalyzerPort }))
+}
 
-// webpack_base.devtool = 'cheap-module-eval-source-map' // https://webpack.js.org/guides/development/#source-maps
-// webpack_base.output.publicPath = 'http://localhost:' + config.port + config.assets_url
-// webpack_base.output.path = '/tmp/'
-
-// webpack_base.plugins.push(
-//   new webpack.DefinePlugin({
-//     'process.env.NODE_ENV': JSON.stringify('development')
-//   }),
-//   new webpack.HotModuleReplacementPlugin(), // // Enable HMR
-//   new webpack.NoEmitOnErrorsPlugin()
-// )
-
-// module.exports = webpack_base
+module.exports = Merge(BaseConfig, DevConfig)

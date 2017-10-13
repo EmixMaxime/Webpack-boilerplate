@@ -6,13 +6,13 @@ const config = require('./config')
 const StyleLintPlugin = require('stylelint-webpack-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
-const postcss = {
-  plugins: [
-    require('autoprefixer')({
-      browsers: config.browsers
-    })
-  ]
-}
+// const postcss = {
+//   plugins: [
+//     require('autoprefixer')({
+//       browsers: config.browsers
+//     })
+//   ]
+// }
 
 const extractSass = new ExtractTextPlugin({
   filename: '[name].[contenthash].css',
@@ -37,7 +37,8 @@ const webpackBase = {
       root: path.join(__dirname, '../js'),
       components: path.join(__dirname, '../js/components'),
       utils: path.join(__dirname, '../js/utils'),
-      vue: 'vue/dist/vue.js'
+      vue: 'vue/dist/vue.js',
+      main: path.join(__dirname, '../js/main')
     }
   },
   module: {
@@ -64,11 +65,21 @@ const webpackBase = {
           // https://vue-loader.vuejs.org/en/configurations/pre-processors.html
           loaders: {
             // Contrary to what its name indicates, sass-loader parses SCSS syntax by default.
-            scss: 'vue-style-loader!css-loader!sass-loader',
-            // scss: extractSass.extract({
-            //   fallback: 'style-loader',
-            //   use: ['css-loader', 'sass-loader']
-            // }),
+            // scss: 'vue-style-loader!css-loader!sass-loader',
+            scss: extractSass.extract({
+              fallback: 'style-loader',
+              use: [{
+                loader: 'css-loader',
+                options: {
+                  sourceMap: true
+                }
+              }, {
+                loader: 'sass-loader',
+                options: {
+                  sourceMap: true
+                }
+              }]
+            }),
             js: 'babel-loader'
             // sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax' // <style lang="sass">
           }
@@ -83,7 +94,11 @@ const webpackBase = {
         use: extractSass.extract({
           use: [
             {
-              loader: 'css-loader' // translates CSS into CommonJS
+              // translates CSS into CommonJS
+              loader: 'css-loader',
+              options: {
+                sourceMap: true
+              }
             }, /* {
               loader: 'postcss-loader'
             }, */
@@ -91,7 +106,8 @@ const webpackBase = {
               loader: 'sass-loader', // compiles Sass to CSS
               options: { // You can also pass options directly to node-sass
                 includePaths: [ path.join(__dirname, '../sass/') ],
-                outputStyle: 'compressed'
+                outputStyle: 'compressed',
+                sourceMap: true
               }
             }
           ],
@@ -113,7 +129,7 @@ const webpackBase = {
           loader: 'url-loader',
           query: {
             limit: 10,
-            name: '[name].[hash:7].[ext]'
+            name: '[name].[ext]'
           }
         }]
 
@@ -127,7 +143,7 @@ const webpackBase = {
       name: config.vendor,
       // (the commons chunk name)
 
-      filename: 'commons.js',
+      filename: process.env.NODE_ENV === 'dev' ? 'commons.js' : 'commons.[chunkhash:8].js',
       // (the filename of the commons chunk)
 
       // https://webpack.js.org/plugins/commons-chunk-plugin/#passing-the-minchunks-property-a-function
@@ -139,10 +155,6 @@ const webpackBase = {
         }
         return module.context && module.context.indexOf('node_modules') !== -1
       }
-      // (Modules must be shared between 3 entries)
-
-      // chunks: ["pageA", "pageB"],
-      // (Only use these entries)
     }),
 
     /**
@@ -155,18 +167,6 @@ const webpackBase = {
     new webpack.optimize.CommonsChunkPlugin({
       name: 'manifest'
     })
-    // new webpack.LoaderOptionsPlugin({
-    //   options: {
-    //     // postcss: postcss,
-    //     vue: {
-    //       loaders: {
-    //         scss: 'vue-style-loader!css-loader!sass-loader',
-    //         js: 'babel-loader'
-    //       },
-    //       // postcss: postcss
-    //     }
-    //   }
-    // }),
   ]
 }
 
