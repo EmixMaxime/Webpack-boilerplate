@@ -15,12 +15,12 @@ const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 // }
 
 const extractSass = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css',
+  filename: '[name].[chunkhash:8].css',
   disable: process.env.NODE_ENV === 'dev'
 })
 
 const extractCss = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css',
+  filename: '[name].[chunkhash:8].css',
   disable: process.env.NODE_ENV === 'dev'
 })
 
