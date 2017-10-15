@@ -29,22 +29,38 @@ class Asset
 
     // In production, we use the assets.json file.
     if ($assetPathfile) {
-      $assetsInformations = json_decode(file_get_contents($assetPathfile));
+      [$file, $_ext] = explode('.', $assetPathfile);
 
-      foreach ($assetsInformations as $assetInformations) {
-        foreach ($assetInformations as $key => $value) {
+      $serializedFile = "$file.serialized";
 
-          // Get filename with hash
-          preg_match("/\w+\.\w+/", $value, $filename);
-          $filename = $filename[0];
+      // The @ operator suppresses errors and warnings but it is a tool of last resort.
+      $updated = @filemtime($serializedFile) !== filemtime($assetPathfile);
 
-          // Hash deletation
-          preg_match('/^\w+/', $filename, $filename);
-          $filename = $filename[0];
-
-          $this->files[$key][$filename] = $value;
+      if($updated) {
+        $assetsInformations = json_decode(file_get_contents($assetPathfile));
+        
+        // Compute things
+        foreach ($assetsInformations as $assetInformations) {
+          foreach ($assetInformations as $key => $value) {
+  
+            // Get filename with hash
+            preg_match("/\w+\.\w+/", $value, $filename);
+            $filename = $filename[0];
+  
+            // Hash deletation
+            preg_match('/^\w+/', $filename, $filename);
+            $filename = $filename[0];
+  
+            $this->files[$key][$filename] = $value;
+          }
         }
+
+        file_put_contents($serializedFile, serialize($this->files));
+
+      } else {
+        $this->files = unserialize(file_get_contents($serializedFile));
       }
+
     }
   }
 
