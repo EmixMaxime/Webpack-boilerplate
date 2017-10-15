@@ -5,7 +5,7 @@
   "main": "config.js",
   "scripts": {
     "dev": "NODE_ENV=dev node server.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "NODE_ENV=prod webpack --config webpack.prod.js"
   },
   "author": "Emix <=>",
   "license": "MIT",
