@@ -7,7 +7,7 @@ const config = require('./config')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 // Je ne sais pas trop pourquoi, mais voilà :-)
-for (var name in BaseConfig.entry) {
+for (let name in BaseConfig.entry) {
   BaseConfig.entry[name] = [path.resolve(__dirname, './server-client'), ...BaseConfig.entry[name]]
 }
 
@@ -20,8 +20,8 @@ const DevConfig = {
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
 
-    new webpack.HotModuleReplacementPlugin(), // // Enable HMR
-    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(), // Enable HMR
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }
 
