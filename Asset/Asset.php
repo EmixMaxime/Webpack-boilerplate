@@ -18,11 +18,11 @@ class Asset
    */
   private static $_instance;
 
-    /**
-     *
-     * @param null|String $assetPathfile - Si c'est pour la prod je donne que $assetPathfile
-     * @param null|String $assetsUri - Si c'est pour le dev, je donne l'uri
-     */
+  /**
+   *
+   * @param null|String $assetPathfile - Si c'est pour la prod je donne que $assetPathfile
+   * @param null|String $assetsUri - Si c'est pour le dev, je donne l'uri
+   */
   public function __construct(?String $assetPathfile = null, ?String $assetsUri = null)
   {
     $this->assetsUri = $assetsUri;
@@ -64,39 +64,40 @@ class Asset
     }
   }
 
-    /**
-     * @param null|String $assetPathfile
-     * @param null|String $assetsUri
-     * @return Asset
-     */
-    public static function getInstance(?String $assetPathfile = null, ?String $assetsUri = null)
-    {
-      if (is_null(self::$_instance)) {
-        self::$_instance = new Asset($assetPathfile, $assetsUri);
-      }
-
-      return self::$_instance;
+  /**
+   * @param null|String $assetPathfile
+   * @param null|String $assetsUri
+   * @return Asset
+   */
+  public static function getInstance(?String $assetPathfile = null, ?String $assetsUri = null)
+  {
+    if (is_null(self::$_instance)) {
+      self::$_instance = new Asset($assetPathfile, $assetsUri);
     }
 
-    /**
-     * @param String $file
-     * @return null|String
-     */
-    public function path(String $file): ?String
+    return self::$_instance;
+  }
+
+  /**
+   * @param String $file
+   * @return null|String
+   */
+  public function path(String $file): ?String
   {
-    $parts = explode('.', $file);
+    [$name, $extension] = explode('.', $file);
 
     if ($this->assetsUri) {
       // Because in dev it's the js file who's inject the style
-      if ($parts[1] === 'css') {
+      if ($extension === 'css') {
         return null;
       }
 
       return $this->assetsUri . '/' . $file;
     }
 
-    $files = $this->files[$parts[1]]; // $parts[1] = file extension
-    return $files[$parts[0]];
+    // get files to the given extension
+    $files = $this->files[$extension];
+    return $files[$name];
   }
 
 }
