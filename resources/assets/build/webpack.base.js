@@ -146,23 +146,6 @@ const webpackBase = {
   plugins: [
     extractSass,
     new FriendlyErrorsWebpackPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: config.vendor,
-      // (the commons chunk name)
-
-      filename: process.env.NODE_ENV === 'dev' ? 'commons.js' : 'commons.[chunkhash:8].js',
-      // (the filename of the commons chunk)
-
-      // https://webpack.js.org/plugins/commons-chunk-plugin/#passing-the-minchunks-property-a-function
-      minChunks: function (module) {
-        // This prevents stylesheet resources with the .css or .scss extension
-        // from being moved from their original chunk to the vendor chunk
-        if (module.resource && (/^.*\.(css|scss)$/).test(module.resource)) {
-          return false
-        }
-        return module.context && module.context.indexOf('node_modules') !== -1
-      }
-    }),
 
     /**
      * A lesser-known feature of the CommonsChunkPlugin is extracting webpack's boilerplate
@@ -175,6 +158,28 @@ const webpackBase = {
       name: 'manifest'
     })
   ]
+}
+
+if (config.vendor) {
+  const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
+    name: config.vendor,
+    // (the commons chunk name)
+
+    filename: process.env.NODE_ENV === 'dev' ? 'commons.js' : 'commons.[chunkhash:8].js',
+    // (the filename of the commons chunk)
+
+    // https://webpack.js.org/plugins/commons-chunk-plugin/#passing-the-minchunks-property-a-function
+    minChunks: function (module) {
+      // This prevents stylesheet resources with the .css or .scss extension
+      // from being moved from their original chunk to the vendor chunk
+      if (module.resource && (/^.*\.(css|scss)$/).test(module.resource)) {
+        return false
+      }
+      return module.context && module.context.indexOf('node_modules') !== -1
+    }
+  })
+
+  webpackBase.plugins.push(commonsChunkPlugin)
 }
 
 if (config.stylelint) {
