@@ -39,7 +39,14 @@ const webpackBase = {
       utils: path.join(__dirname, '../js/utils'),
       vue: 'vue/dist/vue.js',
       main: path.join(__dirname, '../js/main')
-    }
+    },
+    // https://webpack.js.org/configuration/resolve/#resolve-modules
+    modules: ['node_modules', path.resolve(__dirname, 'node_modules')]
+  },
+  // I don't know why...
+  // A issue : https://github.com/webpack/webpack/issues/3066
+  resolveLoader: {
+    modules: ['node_modules', path.resolve(__dirname, 'node_modules')]
   },
   module: {
     rules: [

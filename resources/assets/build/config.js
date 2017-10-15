@@ -1,10 +1,11 @@
+// @TODO read: https://github.com/webpack-contrib/file-loader/issues/32
 const path = require('path')
 
 const publicAssets = path.resolve(__dirname, '../../../public/assets')
 
 module.exports = {
   entry: {
-    home: ['./resources/assets/pages/home.js']
+    home: [path.resolve(__dirname, '../pages/home.js')]
   },
   vendor: ['vue'],
 
@@ -15,7 +16,7 @@ module.exports = {
   // = public path
   assets_url: '/assets/', // Urls dans le fichier final attention au / à la fin pour la génération du fichier assets.json !!
   assets_path: publicAssets, // ou build ? : Attention -> obligation de mettre le / à  la fin
-  stylelint: './css/**/*.scss',
+  stylelint: '',
   refresh: ['./resources/views/**/*.twig', './public/**/*.php'], // Permet de forcer le rafraichissement du navigateur lors de la modification de ces fichiers
   historyApiFallback: false // Passer à true si on utilise le mode: 'history' de vue-router (redirige toutes les requêtes sans réponse vers index.html)
 }
